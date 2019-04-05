@@ -1,5 +1,6 @@
-#include <stdio.h>
-#include <string.h>
+#pragma once
+#include<stdio.h>
+#include<string.h>
 #include<windows.h>
 #include "message.h"
 #define SIZE 20 
@@ -9,6 +10,7 @@ int history[400][3]={0},num=0;//record whlch step who go while one
 int isBlackMove=1;//if it is the time for black one to play, flag=0, or flag=1
 int isBlackTheWinner=0;
 int isBlackIdentity=0;
+int gobangGameMode;
 extern void draw(); //ªÊ÷∆∆Â≈Ã  
 extern int pending_win (int x ,int y); //judge whether someone can win
 extern int pending_legal(int x,int y); //judging whether put the chess here is legal
@@ -74,7 +76,7 @@ int play(int y,int x)
 	
 	record(x,y,num++);//record the step now 
 	insert(x,y); //put the chess into the board
-	flipIsBlackMove();
+	
 	draw();
 	if (pending_win(x,y))
 	{
@@ -84,6 +86,7 @@ int play(int y,int x)
 		puts(isBlackTheWinner?MESSAGE_BLACK_WIN:MESSAGE_WHITE_WIN);
 		return GAMEOVER_SIGNAL;
 	}
+	flipIsBlackMove();
 	return CONTINUE_SIGNAL;
 }
 

@@ -1,4 +1,3 @@
-
 #include "ui.h"
 #include "message.h"
 #include "gobang.h"
@@ -13,7 +12,6 @@ void clear();
 void initListener();
 void renderBotton();
 void internetGameInit();
-int internetMode;//-1 LocalMode 0 ServerMode 1 ClientMode
 void internetGameInit(){
 	//∆Ù∂Ø”Œœ∑
 	setIsBlackMove(1);
@@ -263,7 +261,7 @@ int internetUserOperationHandler(SOCKET s_client){
 				MessageBox(NULL, TEXT((isBlackTheWinner&&isBlackIdentity) ? MESSAGE_YOU_WIN: MESSAGE_YOU_LOSE ), TEXT(TITLE_GAMEOVER), MB_OK | MB_ICONINFORMATION);
 				return GAMEOVER_SIGNAL;
 			}
-			SetConsoleTitle(internetMode==GOBANG_SERVER_MODE?MESSAGE_WAIT_CLIENT_MOVE:MESSAGE_WAIT_SERVER_MOVE);
+			SetConsoleTitle(gobangGameMode==GOBANG_SERVER_MODE?MESSAGE_WAIT_CLIENT_MOVE:MESSAGE_WAIT_SERVER_MOVE);
 		}
 		return CONTINUE_SIGNAL;
 	}

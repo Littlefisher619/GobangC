@@ -1,15 +1,15 @@
-
 #include<conio.h>
-
-#include<unistd.h>
 #include<string.h>
 #include<winsock2.h>
 #include<stdio.h>
 #include<stdlib.h>
 #include<windows.h>
 #include "internet.h"
-
+#include "message.h"
+#include "ai.h"
+#include "gobang.h"
 void launchLocalMode();
+void launchAIMode();
 void internetModeMenu();
 void initListener();
 void renderBotton();
@@ -18,14 +18,17 @@ int onUndoClick(int x,int y);
 int onSurrenderClick(int x,int y);
 int mainMenu();
 void clear();
-
+COORD waitAI();
+COORD waitForMouseClick();
 int onUndoClick(int x,int y){
-	if(internetMode==GOBANG_LOCAL_MODE) return onLocalUndoClick(x, y);
+	if(gobangGameMode==GOBANG_LOCAL_MODE || 
+	   gobangGameMode==GOBANG_AI_MODE) return onLocalUndoClick(x, y);
 	return UNDO_CLICK_SIGNAL;
 	
 }
 int onSurrenderClick(int x,int y){
-	if(internetMode==GOBANG_LOCAL_MODE) return onLocalSurrenderClick(x, y);
+	if(gobangGameMode==GOBANG_LOCAL_MODE ||
+	   gobangGameMode==GOBANG_AI_MODE) return onLocalSurrenderClick(x, y);
 	return SURRENDER_CLICK_SIGNAL;
 }
 void initListener(){//注册游戏按钮监听器
@@ -52,7 +55,7 @@ void internetModeMenu(){
 	scanf("%d",&op);
 	getchar();
 	if(op==1){
-		internetMode=GOBANG_CLIENT_MODE;
+		gobangGameMode=GOBANG_CLIENT_MODE;
 		clear();
 		pos(0,0);
 		puts(MESSAGE_ENTER_IPADDR);
@@ -62,7 +65,7 @@ void internetModeMenu(){
 		internetClientMode(ip);
 		
 	}else if(op==2){
-		internetMode=GOBANG_SERVER_MODE;
+		gobangGameMode=GOBANG_SERVER_MODE;
 		clear();
 		pos(0,0);
 		internetServerMode();
@@ -75,12 +78,15 @@ void internetModeMenu(){
 int mainMenu(){
 	clear();
 	pos(0,0);
-	puts("Welcome to GOBANG!\n[1] Local Multiple Player\n[2] Internet Multiple Player\n[3] Exit\n");
+	puts("Welcome to GOBANG!\n[0] Local Single Game\n[1] Local Multiple Player\n[2] Internet Multiple Player\n[3] Exit\n");
 	showCursor();
 	int op;
 	scanf("%d",&op);
-	pos(0,4);
+	pos(0,5);
 	switch(op){
+		case 0:
+			launchAIMode();
+			break;
 		case 1:
 			launchLocalMode();
 			break;
@@ -95,11 +101,8 @@ int mainMenu(){
 		
 	}
 }
-
-
-
 void launchLocalMode(){
-	internetMode=GOBANG_LOCAL_MODE;
+	gobangGameMode=GOBANG_LOCAL_MODE;
 	//本地游戏
 	clear();
 	//注册本地游戏按钮监听器
@@ -123,6 +126,7 @@ void launchLocalMode(){
 	}
 	MessageBox(NULL, TEXT(TITLE_GAMEOVER), TEXT(TITLE_GAMEOVER), MB_OK | MB_ICONINFORMATION);
 }
+
 int main(){
 	while(1){
 		//主菜单
